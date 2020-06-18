@@ -1,5 +1,7 @@
 <?php
 
+ini_set('max_execution_time', 900);
+
 // Configuration
 require_once('../admin/config.php');
 
@@ -193,8 +195,16 @@ $controller = new Front($registry);
 //else
 //	$log->write('Запуск веб сервера в режиме модуля сервера '.$sapi);
 
-// Router
+// Лог запросов со стороны 1С
+$request_url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$log->write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+$log->write($request_url);
 
+//$request_cookie = print_r($_COOKIE, true);
+//$log->write('$_COOKIE:');
+//$log->write($request_cookie);
+
+// Router
 if (isset($request->get['mode']) && $request->get['type'] == 'catalog') {
 
 	switch ($request->get['mode']) {
