@@ -8180,71 +8180,78 @@ class ModelExtensionExchange1c extends Model {
 	public function checkUpdates($settings) {
 
 		$message = "";
+
 		if (isset($settings['exchange1c_version'])) {
 			$version = $settings['exchange1c_version'];
 		} else {
-			$version = '1.6.4.1';
+			$version = '1.6.4.7';
 			$settings['exchange1c_version'] = $version;
 		}
-		$version = "1.6.4.1";
+
 		$beta = '';
 
 		if ($version == '1.6.4.1') {
 			$this->log("Обновление до версии 1.6.4.2...'");
 			$success = $this->update_1_6_4_2();
-	        if ($this->ERROR) return false;
-	   		if ($success) {
-	   			$version = '1.6.4.2';
-	   			$message .= "Успешно обновлено до версии " . $version;
+			if ($this->ERROR) return false;
+			if ($success) {
+				$version = '1.6.4.2';
+				$message .= " Успешно обновлено до версии " . $version;
 			}
 		}
+
 		if ($version == '1.6.4.2') {
 			$this->log("Обновление до версии 1.6.4.3...'");
 			$success = $this->update_1_6_4_3();
-	        if ($this->ERROR) return false;
-	   		if ($success) {
-	   			$version = '1.6.4.3';
-	   			$message .= "Успешно обновлено до версии " . $version;
+			if ($this->ERROR) return false;
+			if ($success) {
+				$version = '1.6.4.3';
+				$message .= " Успешно обновлено до версии " . $version;
 			}
 		}
+
 		if ($version == '1.6.4.3') {
 			$this->log("Обновление до версии 1.6.4.4...'");
 			$success = $this->update_1_6_4_4();
-	        if ($this->ERROR) return false;
-	   		if ($success) {
-	   			$version = '1.6.4.4';
-	   			$message .= "Успешно обновлено до версии " . $version;
+			if ($this->ERROR) return false;
+			if ($success) {
+				$version = '1.6.4.4';
+				$message .= " Успешно обновлено до версии " . $version;
 			}
 		}
+
 		if (version_compare($version, '1.6.4.4', '=')) {
 			$this->log("Обновление до версии 1.6.4.5...'");
 			$success = $this->update_1_6_4_5();
-		        if ($this->ERROR) return false;
-		   	if ($success) {
-		   		$version = '1.6.4.5';
-		   		$message .= "Успешно обновлено до версии " . $version;
+			if ($this->ERROR) return false;
+			if ($success) {
+				$version = '1.6.4.5';
+				$message .= " Успешно обновлено до версии " . $version;
 			}
 		}
+
 		if (version_compare($version, '1.6.4.5', '=')) {
 			$this->log("Обновление до версии 1.6.4.6...'");
 			$success = $this->update_1_6_4_6();
-		        if ($this->ERROR) return false;
-		   	if ($success) {
-		   		$version = '1.6.4.6';
-		   		$message .= "Успешно обновлено до версии " . $version;
+			if ($this->ERROR) return false;
+			if ($success) {
+				$version = '1.6.4.6';
+				$message .= " Успешно обновлено до версии " . $version;
 			}
 		}
+
 		if (version_compare($version, '1.6.4.6', '=')) {
 			$this->log("Обновление до версии 1.6.4.7...'");
 			$success = $this->update_1_6_4_7();
-		        if ($this->ERROR) return false;
-		   	if ($success) {
-		   		$version = '1.6.4.7';
-		   		$message .= "Успешно обновлено до версии " . $version;
+			if ($this->ERROR) return false;
+			if ($success) {
+				$version = '1.6.4.7';
+				$message .= " Успешно обновлено до версии " . $version;
 			}
 		}
 
 		$pos = strrpos($version, 'b');
+
 		if ($beta) {
 			$old_version = $version;
 			if ($pos === false) {
@@ -8253,7 +8260,7 @@ class ModelExtensionExchange1c extends Model {
 				$version = substr($version, 0, $pos) . 'b' . $beta;
 			}
 			if ($old_version != $version)
-				$message .= ($message ? '<br />' : '') . 'Обновление до beta версии ' . $version;
+				$message .= ($message ? '<br />' : '') . ' Обновление до beta версии ' . $version;
 		} else {
 			if ($pos !== false) {
 				$version = substr($version, 0, $pos);
@@ -8264,7 +8271,7 @@ class ModelExtensionExchange1c extends Model {
 			//$this->setEvents();
 			$settings['exchange1c_version'] = $version;
 			$this->model_setting_setting->editSetting('exchange1c', $settings);
-			$message .= '<br /><strong>ВНИМАНИЕ! после обновления необходимо проверить все настройки и сохранить!</strong>';
+			$message .= '<br><strong>ВНИМАНИЕ! после обновления необходимо проверить все настройки и сохранить!</strong>';
 		}
 
 		return $message;
