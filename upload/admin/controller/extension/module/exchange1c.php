@@ -362,14 +362,14 @@ class ControllerExtensionModuleExchange1c extends Controller {
 			//$settings = $this->model_setting_setting->getSetting('exchange1c');
 		}
 
-
 		if (isset($settings['exchange1c_version'])) {
 			$data['version'] = $settings['exchange1c_version'];
 		} else {
 			$data['version'] = "0.0.0.0";
-			$this->error['warning'] = "Модуль не установлен! Включите модуль!";
+			$this->error['warning'] = "<strong>Модуль не установлен, установите модуль! (Дополнения -> Модули -> Обмен данными с 1C v8.x -> Установить)</strong>";
 			$this->log("Обнаружен первый вход в админку");
 		}
+
 		$data['url_connect'] = HTTP_CATALOG . "export/exchange1c.php";
 
 		$data['exchange1c_config_icon'] = $this->getParam('config_icon');
@@ -885,11 +885,13 @@ class ControllerExtensionModuleExchange1c extends Controller {
 		$data['upload_max_filesize'] = ini_get('upload_max_filesize');
 		$data['post_max_size'] = ini_get('post_max_size');
 
-		$links_info = $this->model_extension_exchange1c->linksInfo();
-		$data['links_product_info'] = $links_info['product_to_1c'];
-		$data['links_category_info'] = $links_info['category_to_1c'];
-		$data['links_manufacturer_info'] = $links_info['manufacturer_to_1c'];
-		$data['links_attribute_info'] = $links_info['attribute_to_1c'];
+		if (isset($settings['exchange1c_version'])) {
+			$links_info = $this->model_extension_exchange1c->linksInfo();
+			$data['links_product_info'] = $links_info['product_to_1c'];
+			$data['links_category_info'] = $links_info['category_to_1c'];
+			$data['links_manufacturer_info'] = $links_info['manufacturer_to_1c'];
+			$data['links_attribute_info'] = $links_info['attribute_to_1c'];
+		}
 
 	 	// информация о памяти
 		$data['memory_limit'] = ini_get('memory_limit');
