@@ -5458,6 +5458,7 @@ class ModelExtensionExchange1c extends Model {
 			$feature_value = '';
 
 			$parse_options = array();
+
 			foreach ($xml->ХарактеристикаТовара as $product_option) {
 				$name = trim(htmlspecialchars((string)$product_option->Наименование));
 				if ($this->config->get('exchange1c_delete_text_in_brackets_option') == 1) {
@@ -5535,7 +5536,7 @@ class ModelExtensionExchange1c extends Model {
 				if ($query->num_rows) {
 					$product_option_id = $query->row['product_option_id'];
 				} else {
-					$this->query("INSERT INTO `" . DB_PREFIX . "product_option` SET `product_id` = " . $product_id . ", `option_id` = " . $option_id);
+					$this->query("INSERT INTO `" . DB_PREFIX . "product_option` SET `product_id` = " . $product_id . ", `option_id` = " . $option_id . ", `required` = 1");
 					$product_option_id = $this->db->getLastId();
 				}
 
@@ -5578,7 +5579,7 @@ class ModelExtensionExchange1c extends Model {
 	 */
 	private function parseOffers($xml) {
 
-		$this->log("~Начало разбора предложений");
+		$this->log("~Начало разбора предложений", 0);
 
 		if (!$xml->Предложение) {
 			$this->log("parseOffers(): Пустое предложение, пропущено");
@@ -5841,7 +5842,7 @@ class ModelExtensionExchange1c extends Model {
 
 		$this->logStat('offers');
 
-		$this->log("Загружено предложений " . $num_offer . " из " . $count_offers);
+		$this->log("Загружено предложений " . $num_offer . " из " . $count_offers, 0);
 
 		return $num_offer;
 
@@ -8008,7 +8009,7 @@ class ModelExtensionExchange1c extends Model {
 
 		// Функция будет сама определять что за файл загружается
 		$this->STAT['exchange'] = microtime(true);
-		$this->log("~НАЧАЛО ЗАГРУЗКИ ДАННЫХ");
+		$this->log("~НАЧАЛО ЗАГРУЗКИ ДАННЫХ", 0);
 		//$this->log("Доступно памяти: " . sprintf("%.3f", memory_get_peak_usage() / 1024 / 1024) . " Mb", 2);
 
 		// Определим язык
@@ -8093,9 +8094,9 @@ class ModelExtensionExchange1c extends Model {
 			$this->log($xml,2);
 		}
 
-		$this->log("~КОНЕЦ ЗАГРУЗКИ ДАННЫХ");
+		$this->log("~КОНЕЦ ЗАГРУЗКИ ДАННЫХ", 0);
 		$this->logStat('exchange');
-		$this->log($this->STAT, 2);
+		$this->log($this->STAT, 0);
 		$this->setConfig('stat_'.$filename, json_encode($this->STAT), 1, 'exchange1c-stat');
 		return "";
 

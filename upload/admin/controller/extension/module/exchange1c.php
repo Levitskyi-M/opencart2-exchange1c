@@ -11,6 +11,11 @@ class ControllerExtensionModuleExchange1c extends Controller {
 	 * @param	string,object	Сообщение или объект
 	 */
 	private function log($message, $level=1) {
+		if ($level == 0) {
+			$this->log->write(print_r($message,true));
+			return;
+		}
+
 		if ($this->config->get('exchange1c_log_level') >= $level) {
 
 			if ($level == 1) {
@@ -37,21 +42,33 @@ class ControllerExtensionModuleExchange1c extends Controller {
 	 * Выводит сообщение
 	 */
 	private function echo_message($ok, $message="") {
-		if ($ok) {
-			echo "success\n";
-			$this->log("success",2);
-			if ($message) {
-				echo $message;
-				$this->log($message,2);
-			}
-		} else {
-			echo "failure\n";
-			$this->log("failure",2);
-			if ($message) {
-				echo $message;
-				$this->log($message,2);
-			}
-		};
+		switch ($ok) {
+			case 1:
+				echo "success\n";
+				$this->log("success",2);
+				if ($message) {
+					echo $message;
+					$this->log($message,2);
+				}
+				break;
+
+			case 2:
+				echo "progress\n";
+				$this->log("progress",2);
+				if ($message) {
+					echo $message;
+					$this->log($message,2);
+				}
+				break;
+
+			default:
+				echo "failure\n";
+				$this->log("failure",2);
+				if ($message) {
+					echo $message;
+					$this->log($message,2);
+				}
+		}
 	} // echo_message()
 
 
@@ -946,6 +963,7 @@ class ControllerExtensionModuleExchange1c extends Controller {
 		$settings['exchange1c_seo_manufacturer'] 			= '[manufacturer]';
 		$settings['exchange1c_seo_sku'] 					= '[sku]';
 		$settings['exchange1c_table_fields']				= $this->model_extension_exchange1c->defineTableFields();
+		$settings['exchange1c_log_filename']				= 'exchange1c.log';
 
 		$this->model_setting_setting->editSetting('exchange1c', $settings);
 
