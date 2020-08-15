@@ -977,6 +977,12 @@ class ControllerExtensionModuleExchange1c extends Controller {
 //			)
 //		);
 
+ 		// Добавим отчество плательщика в заказ
+		$result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "order` WHERE `field` = 'middlename'");
+		if (!$result->num_rows) {
+			$this->db->query("ALTER TABLE  `" . DB_PREFIX . "order` ADD `middlename` VARCHAR ( 32 ) NOT NULL AFTER `lastname`");
+		}
+
 		// Общее количество теперь можно хранить не только целое число (для совместимости)
 		// Увеличиваем точность поля веса до тысячных
 		//$this->db->query("ALTER TABLE `" . DB_PREFIX . "product` CHANGE `quantity` `quantity` decimal(15,3) NOT NULL DEFAULT 0.000");
