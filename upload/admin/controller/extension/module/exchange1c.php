@@ -175,7 +175,9 @@ class ControllerExtensionModuleExchange1c extends Controller {
 	 */
 	private function htmlRadio($name, $param) {
 
-		$value = $this->getParam($name);
+		$default = isset($param['default']) ? $param['default'] : '';
+
+		$value = $this->getParam($name, $default);
 
 		if (!$value) $value = "0";
 
