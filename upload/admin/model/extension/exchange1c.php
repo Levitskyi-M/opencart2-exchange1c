@@ -2276,6 +2276,13 @@ class ModelExtensionExchange1c extends Model {
 			$data['image'] = 'no_image.png';
 		}
 
+		// Удаляем кеш основного изображения товара, 
+		// необходимо если основное изображение товара изменилось, но имя файла осталось прежним
+		if ($this->config->get('exchange1c_product_images_cache_clean') == 1 && $this->config->get('exchange1c_product_images_no_import') != 1) {
+			$image_info = pathinfo(DIR_IMAGE . $old_data['image']);
+			$this->deleteCacheImage($image_info);
+		}
+
 		// Сверим что нужно обновдять
 		$modify_fields1 = $this->compareArraysData($data, $old_data, $no_update);
 
