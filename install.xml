@@ -8,7 +8,7 @@
 
 	<file path="admin/controller/common/column_left.php">
 		<operation error="skip">
-			<search><![CDATA[if ($this->user->hasPermission('access', 'extension/event')) {]]></search>
+			<search><![CDATA[if ($extension) {]]></search>
 			<add position="before"><![CDATA[			if ($this->user->hasPermission('access', 'extension/module/exchange1c')) {
 				$extension[] = array(
 					'name'	   => 'Exchange 1C v8.x',
