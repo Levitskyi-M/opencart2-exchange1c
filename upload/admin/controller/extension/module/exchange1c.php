@@ -1194,10 +1194,10 @@ class ControllerExtensionModuleExchange1c extends Controller {
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8"
 		);
 
-		$this->log("Проверка обновлений ...");
+		//$this->log("Проверка обновлений ...");
 		//$message .= $this->model_extension_exchange1c->checkUpdates($settings);
 
-		$this->log->write("Включен модуль " . $this->module_name . " версии " . $settings['exchange1c_version']);
+		$this->log->write("Установлен модуль " . $this->module_name . " версии " . $settings['exchange1c_version']);
 		$this->log->write($message);
 
 	} // install()
