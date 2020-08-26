@@ -4532,6 +4532,8 @@ class ModelExtensionExchange1c extends Model {
 			// МОДЕЛЬ
 			if ($product->Модель) {
 				$data['model'] = htmlspecialchars(trim((string)$product->Модель));
+			} else {
+				$data['model'] = $product->Артикул ? htmlspecialchars(trim((string)$product->Артикул)) : "-";
 			}
 
 			// НАИМЕНОВАНИЕ
