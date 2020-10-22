@@ -5539,7 +5539,6 @@ class ModelExtensionExchange1c extends Model {
 			// Пропишем опцию в товар
 			if ($product_id) {
 
-
 				$product_option_id = 0;
 				$query = $this->query("SELECT * FROM `" . DB_PREFIX . "product_option` WHERE `product_id` = " . $product_id . " AND `option_id` = " . $option_id);
 				if ($query->num_rows) {
@@ -5698,7 +5697,7 @@ class ModelExtensionExchange1c extends Model {
 			if ($data['feature_guid']) {
 				$this->log("Характеристика Ид: " . $data['feature_guid'], 2);
 
-				// Если включено не загружать пустые характеристики! По идее такого не должно быть, но если так бывает
+				// Если включено "Не загружать пустые"
 				if ($this->config->get('exchange1c_product_options_empty_ignore')) {
 					if (!$data['quantity']) {
 						continue;
@@ -8060,6 +8059,7 @@ class ModelExtensionExchange1c extends Model {
 		$this->checkCML($xml);
 		if ($this->ERROR) return $this->error();
 		$xml_date = (string)$xml['ДатаФормирования'];
+		$xml_date = str_replace('T' ,' ', $xml_date);
 		$this->STAT['date'] = $xml_date;
 
 		// IMPORT.XML, OFFERS.XML
@@ -8194,7 +8194,7 @@ class ModelExtensionExchange1c extends Model {
 		if (isset($settings['exchange1c_version'])) {
 			$version = $settings['exchange1c_version'];
 		} else {
-			$version = '1.6.4.7';
+			$version = '1.6.4.8';
 			$settings['exchange1c_version'] = $version;
 		}
 

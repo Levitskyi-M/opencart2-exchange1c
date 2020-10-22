@@ -507,7 +507,7 @@ class ControllerExtensionModuleExchange1c extends Controller {
 			$data['exchange1c_seo_category_tags'] = '{cat}, {cat_id}';
 		}
 		// SEO производители
-		if (isset($this->request->post['exchange1c_seo_manufacturertags'])) {
+		if (isset($this->request->post['exchange1c_seo_manufacturer_tags'])) {
 			$data['exchange1c_seo_manufacturer_tags'] = $this->request->post['exchange1c_seo_manufacturer_tags'];
 		} else {
 			$data['exchange1c_seo_manufacturer_tags'] = '{brand}, {brand_id}';
@@ -945,6 +945,7 @@ class ControllerExtensionModuleExchange1c extends Controller {
 
 		$this->load->model('extension/exchange1c');
 		$this->model_extension_exchange1c->setEvents();
+
 		$module_version = "1.6.4.1";
 
 		// Создадим директорию в кэше
@@ -954,7 +955,6 @@ class ControllerExtensionModuleExchange1c extends Controller {
 			@chmod($cache, 0776);
 		}
 
-		$this->load->model('setting/setting');
 		$settings['exchange1c_version'] 					= $module_version;
 		$settings['exchange1c_name'] 						= 'Exchange 1C 8.x for OpenCart 2.x';
 		$settings['exchange1c_CMS_version']					= VERSION;
@@ -979,10 +979,30 @@ class ControllerExtensionModuleExchange1c extends Controller {
 //			)
 //		);
 
- 		// Добавим отчество плательщика в заказ
+		// Добавим отчество плательщика в заказ
 		$result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "order` WHERE `field` = 'middlename'");
 		if (!$result->num_rows) {
-			$this->db->query("ALTER TABLE  `" . DB_PREFIX . "order` ADD `middlename` VARCHAR ( 32 ) NOT NULL AFTER `lastname`");
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "order` ADD `middlename` VARCHAR ( 32 ) NOT NULL AFTER `lastname`");
+		}
+
+		// Добавим отчество в покупателя
+		$result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "customer` WHERE `field` = 'middlename'");
+		if (!$result->num_rows) {
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "customer` ADD `middlename` VARCHAR ( 32 ) NOT NULL AFTER `lastname`");
+		}
+
+		// Добавим компанию в покупателя
+		$result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "customer` WHERE `field` = 'company'");
+		if (!$result->num_rows) {
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "customer` ADD `company` VARCHAR ( 64 ) NOT NULL AFTER `middlename`");
+		}
+		$result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "customer` WHERE `field` = 'company_inn'");
+		if (!$result->num_rows) {
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "customer` ADD `company_inn` VARCHAR ( 64 ) NOT NULL AFTER `company`");
+		}
+		$result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "customer` WHERE `field` = 'company_kpp'");
+		if (!$result->num_rows) {
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "customer` ADD `company_kpp` VARCHAR ( 64 ) NOT NULL AFTER `company_inn`");
 		}
 
 		// Общее количество теперь можно хранить не только целое число (для совместимости)
@@ -1213,11 +1233,11 @@ class ControllerExtensionModuleExchange1c extends Controller {
 		$this->load->model('extension/exchange1c');
 		$table_fields = $this->model_extension_exchange1c->defineTableFields();
 
-		$this->load->model('extension/event');
-		$this->model_extension_event->deleteEvent('exchange1c');
-
 		$this->load->model('setting/setting');
 		$this->model_setting_setting->deleteSetting('exchange1c');
+
+		$this->load->model('extension/event');
+		$this->model_extension_event->deleteEvent('exchange1c');
 
 		$this->load->model('extension/module');
 		$this->model_extension_module->deleteModule('exchange1c');
@@ -1253,7 +1273,7 @@ class ControllerExtensionModuleExchange1c extends Controller {
 		// Удаляем все корректировки в базе
 		// Таблица CUSTOMER
 
- 		// Удалим добавочное поле организации
+ 		// Удалим добавочное поле отчества
 		$result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "customer` WHERE `field` = 'middlename'");
 		if ($result->num_rows) {
 			$this->db->query("ALTER TABLE  `" . DB_PREFIX . "customer` DROP `middlename`");
@@ -2281,7 +2301,7 @@ class ControllerExtensionModuleExchange1c extends Controller {
 		if (empty($size)) {
 			return 0;
 		}
-		$type = $size{strlen($size)-1};
+		$type = $size[strlen($size)-1];
 		if (!is_numeric($type)) {
 			$size = (integer)$size;
 			switch ($type) {
@@ -2337,7 +2357,7 @@ class ControllerExtensionModuleExchange1c extends Controller {
 	 */
 	private function modeFile($mode, &$error) {
 
-        $xmlfiles = array();
+		$xmlfiles = array();
 
 		if (!$this->checkAuthKey()) exit;
 		$cache = DIR_CACHE . 'exchange1c/';
@@ -2347,17 +2367,16 @@ class ControllerExtensionModuleExchange1c extends Controller {
 
 		// Проверяем на наличие имени файла
 		if (isset($this->request->get['filename'])) {
-			$uplod_file = $cache . $this->request->get['filename'];
-		}
-		else {
+			$upload_file = $cache . $this->request->get['filename'];
+		} else {
 			$error = "modeFile(): No file name variable";
 			return false;
 		}
 
-		// Проверяем XML или изображения
+		// Проверяем, XML или изображения
 		if (strpos($this->request->get['filename'], 'import_files') !== false) {
 			$cache = DIR_IMAGE;
-			$uplod_file = $cache . $this->request->get['filename'];
+			$upload_file = $cache . $this->request->get['filename'];
 			$this->checkUploadFileTree(dirname($this->request->get['filename']) , $cache);
 		}
 
@@ -2367,35 +2386,35 @@ class ControllerExtensionModuleExchange1c extends Controller {
 			return false;
 		}
 
-		$this->log("upload file: " . $uplod_file,2);
+		$this->log("upload file: " . $upload_file,2);
 
 		// Получаем данные
 		$data = file_get_contents("php://input");
+
 		if ($data !== false) {
 
 			// Записываем в файл
-			$filesize = file_put_contents($uplod_file, $data, LOCK_EX);
+			$filesize = file_put_contents($upload_file, $data, LOCK_EX);
 			$this->log("file size: " . $filesize, 2);
 
 			if ($filesize) {
-				chmod($uplod_file , 0664);
+				chmod($upload_file , 0664);
 
-				$xmlfiles = $this->extractZip($uplod_file, $error);
+				$xmlfiles = $this->extractZip($upload_file, $error);
 				if ($error) {
-					$this->echo_message(0, "modeFile(): Error extract file: " . $uplod_file);
+					$this->echo_message(0, "modeFile(): Error extract file: " . $upload_file);
 
 					if ($this->config->get('exchange1c_not_delete_files_after_import') != 1) {
-						$this->log("Удален файл: " . $uplod_file);
-						unlink($uplod_file);
+						$this->log("Удален файл: " . $upload_file);
+						unlink($upload_file);
 					}
 
 					return false;
-				};
+				}
 			} else {
 				$this->echo_message(0, "modeFile(): Error create file");
 			}
-		}
-		else {
+		} else {
 			$this->echo_message(0, "modeFile(): Data empty");
 		}
 
@@ -2435,6 +2454,7 @@ class ControllerExtensionModuleExchange1c extends Controller {
 
 		if ($this->config->get('exchange1c_orders_import') != 1) {
 			$this->log("modeFileSale(): Загрузка заказов отключена");
+			$this->echo_message(1, "modeFileSale(): Successfully processed orders");
 			exit;
 		}
 
